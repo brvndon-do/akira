@@ -1,0 +1,23 @@
+# Build directories
+build/
+out/
+bin/
+lib/
+
+# CMake-generated files
+CMakeCache.txt
+CMakeUserPresets.json
+CMakeFiles/
+*.cmake
+Makefile
+
+# IDE-specific
+.vscode/
+.idea/
+*.user
+*.sln
+*.vcxproj*
+
+# System/editor files
+.DS_Store
+*.swp
