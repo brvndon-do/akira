@@ -1,5 +1,6 @@
-#include "../includes/event_handler.h"
 #include <stdio.h>
+
+#include "event_handler.h"
 
 void update (double delta_time) {
     printf("hello world from update\n");
