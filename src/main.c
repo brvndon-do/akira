@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     while (is_running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_EVENT_QUIT) {
-                is_running = 0;
+                is_running = false;
             }
         }
 
