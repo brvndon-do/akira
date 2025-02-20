@@ -21,6 +21,8 @@ int main(int argc, char *argv[]) {
     }
 
     AppState_t *app_state = SDL_calloc(1, sizeof(AppState_t));
+    GameContext_t *game_context = SDL_calloc(1, sizeof(GameContext_t));
+    app_state->game_context = game_context;
 
     if (!SDL_CreateWindowAndRenderer(APP_NAME, SCREEN_WIDTH, SCREEN_HEIGHT, 0, &app_state->window, &app_state->renderer)) {
         SDL_Log("main: could not create window and renderer: '%s'\n", SDL_GetError());
@@ -45,6 +47,17 @@ int main(int argc, char *argv[]) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_EVENT_QUIT) {
                 is_running = false;
+            }
+
+            switch (event.type) {
+                case SDL_EVENT_QUIT:
+                    is_running = false;
+                    break;
+                case SDL_EVENT_KEY_DOWN:
+                    handle_input(event.key.scancode, app_state->game_context);
+                    break;
+                default:
+                    break;
             }
         }
 
