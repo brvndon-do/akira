@@ -3,7 +3,7 @@
 
 #include "event_handler.h"
 
-void update (double delta_time) {
+void update (double delta_time, void *game_context) {
     printf("hello world from update\n");
 }
 
