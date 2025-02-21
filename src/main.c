@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <SDL3/SDL.h>
-#include <stdbool.h>
 
 #include "event_handler.h"
 
@@ -21,6 +20,10 @@ int main(int argc, char *argv[]) {
     }
 
     AppState_t *app_state = SDL_calloc(1, sizeof(AppState_t));
+
+    InputState_t *input_state = SDL_calloc(1, sizeof(InputState_t));
+    app_state->input_state = input_state;
+
     GameContext_t *game_context = SDL_calloc(1, sizeof(GameContext_t));
     app_state->game_context = game_context;
 
@@ -41,32 +44,30 @@ int main(int argc, char *argv[]) {
 
     while (is_running) {
         current = SDL_GetTicks();
-        double delta_time = (current - previous) / 1000;
+        double delta_time = (current - previous) / 1000.0;
         previous = current;
 
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_EVENT_QUIT) {
-                is_running = false;
-            }
-
             switch (event.type) {
                 case SDL_EVENT_QUIT:
                     is_running = false;
                     break;
                 case SDL_EVENT_KEY_DOWN:
-                    handle_input(event.key.scancode, app_state->game_context);
+                    handle_input(event.key.scancode, true, app_state->input_state);
                     break;
+                case SDL_EVENT_KEY_UP:
+                    handle_input(event.key.scancode, false, app_state->input_state);
                 default:
                     break;
             }
         }
 
-        update(delta_time, app_state->game_context);
+        update(delta_time, app_state->input_state, app_state->game_context);
 
         SDL_SetRenderDrawColor(app_state->renderer, 0, 0, 0, 255);
         SDL_RenderClear(app_state->renderer);
         
-        render(app_state->renderer);
+        render(app_state->renderer, app_state->game_context);
 
         SDL_RenderPresent(app_state->renderer);
 
