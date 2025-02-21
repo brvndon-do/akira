@@ -1,5 +1,10 @@
 #include <SDL3/SDL.h>
 
+typedef struct Entity_t {
+    float x_pos;
+    float y_pos;
+} Entity_t;
+
 typedef struct InputState_t {
     bool move_up;
     bool move_down;
@@ -8,8 +13,7 @@ typedef struct InputState_t {
 } InputState_t;
 
 typedef struct GameContext_t { 
-    float x_pos;
-    float y_pos;
+    Entity_t *player_entity;
 } GameContext_t;
 
 typedef struct AppState_t {

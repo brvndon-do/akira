@@ -9,6 +9,17 @@
 #define FPS 60
 #define MS_PER_FRAME (1000 / FPS)
 
+void initialize_app_state(AppState_t *app_state) {
+    InputState_t *input_state = SDL_calloc(1, sizeof(InputState_t));
+    app_state->input_state = input_state;
+
+    GameContext_t *game_context = SDL_calloc(1, sizeof(GameContext_t));
+    app_state->game_context = game_context;
+
+    Entity_t *player_entity = SDL_calloc(1, sizeof(Entity_t));
+    app_state->game_context->player_entity = player_entity;
+}
+
 int main(int argc, char *argv[]) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("main: could not initialize SDL: '%s'\n", SDL_GetError());
@@ -20,12 +31,7 @@ int main(int argc, char *argv[]) {
     }
 
     AppState_t *app_state = SDL_calloc(1, sizeof(AppState_t));
-
-    InputState_t *input_state = SDL_calloc(1, sizeof(InputState_t));
-    app_state->input_state = input_state;
-
-    GameContext_t *game_context = SDL_calloc(1, sizeof(GameContext_t));
-    app_state->game_context = game_context;
+    initialize_app_state(app_state);
 
     if (!SDL_CreateWindowAndRenderer(APP_NAME, SCREEN_WIDTH, SCREEN_HEIGHT, 0, &app_state->window, &app_state->renderer)) {
         SDL_Log("main: could not create window and renderer: '%s'\n", SDL_GetError());

@@ -24,26 +24,29 @@ void handle_input(SDL_Scancode key_code, bool is_pressed, InputState_t *input_st
 
 void update (double delta_time, InputState_t *input_state, GameContext_t *game_context) {
     const float speed = 100.0f;
+    Entity_t *player = (Entity_t *)game_context->player_entity;
 
     if (input_state->move_up) {
-        game_context->y_pos -= speed * delta_time;
+        player->y_pos -= speed * delta_time;
     }
 
     if (input_state->move_down) {
-        game_context->y_pos += speed * delta_time;
+        player->y_pos += speed * delta_time;
     }
 
     if (input_state->move_left) {
-        game_context->x_pos -= speed * delta_time;
+        player->x_pos -= speed * delta_time;
     }
 
     if (input_state->move_right) {
-        game_context->x_pos += speed * delta_time;
+        player->x_pos += speed * delta_time;
     }
 }
 
 void render(SDL_Renderer *renderer, GameContext_t *game_context) {
-    SDL_FRect rect = { game_context->x_pos, game_context->y_pos, 200, 200 };
+    Entity_t *player = (Entity_t *)game_context->player_entity;
+
+    SDL_FRect rect = { player->x_pos, player->y_pos, 200, 200 };
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderFillRect(renderer, &rect);
 }
@@ -53,6 +56,7 @@ void cleanup(AppState_t *app_state) {
     SDL_DestroyRenderer(app_state->renderer);
 
     SDL_free(app_state->input_state);
+    SDL_free(app_state->game_context->player_entity);
     SDL_free(app_state->game_context);
     SDL_free(app_state);
 }
