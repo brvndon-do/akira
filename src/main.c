@@ -9,7 +9,9 @@
 #define FPS 60
 #define MS_PER_FRAME (1000 / FPS)
 
-void initialize_app_state(AppState_t *app_state) {
+AppState_t *initialize_app_state() {
+    AppState_t *app_state = SDL_calloc(1, sizeof(AppState_t));
+
     InputState_t *input_state = SDL_calloc(1, sizeof(InputState_t));
     app_state->input_state = input_state;
 
@@ -18,6 +20,8 @@ void initialize_app_state(AppState_t *app_state) {
 
     Entity_t *player_entity = SDL_calloc(1, sizeof(Entity_t));
     app_state->game_context->player_entity = player_entity;
+
+    return app_state;
 }
 
 int main(int argc, char *argv[]) {
@@ -30,8 +34,7 @@ int main(int argc, char *argv[]) {
         SDL_Log("main: could not set metadata: '%s'\n", SDL_GetError());
     }
 
-    AppState_t *app_state = SDL_calloc(1, sizeof(AppState_t));
-    initialize_app_state(app_state);
+    AppState_t *app_state = initialize_app_state();
 
     if (!SDL_CreateWindowAndRenderer(APP_NAME, SCREEN_WIDTH, SCREEN_HEIGHT, 0, &app_state->window, &app_state->renderer)) {
         SDL_Log("main: could not create window and renderer: '%s'\n", SDL_GetError());
