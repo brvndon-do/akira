@@ -9,6 +9,18 @@
 #define FPS 60
 #define MS_PER_FRAME (1000 / FPS)
 
+void init_entity(Entity_t *entity, int x, int y, int w, int h) {
+    entity->x_pos = x;
+    entity->y_pos = y;
+
+    entity->collision_box = (SDL_Rect){
+        .x = x,
+        .y = y,
+        .w = w,
+        .h = h
+    };
+}
+
 AppState_t *initialize_app_state() {
     AppState_t *app_state = SDL_calloc(1, sizeof(AppState_t));
 
@@ -19,7 +31,12 @@ AppState_t *initialize_app_state() {
     app_state->game_context = game_context;
 
     Entity_t *player_entity = SDL_calloc(1, sizeof(Entity_t));
+    init_entity(player_entity, 0, 0, 50, 50);
     app_state->game_context->player_entity = player_entity;
+
+    Entity_t *test_entity = SDL_calloc(1, sizeof(Entity_t));
+    init_entity(test_entity, 100, 100, 50, 50);
+    app_state->game_context->test_entity = test_entity;
 
     return app_state;
 }

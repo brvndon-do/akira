@@ -3,6 +3,7 @@
 typedef struct Entity_t {
     float x_pos;
     float y_pos;
+    SDL_Rect collision_box;
 } Entity_t;
 
 typedef struct InputState_t {
@@ -14,6 +15,7 @@ typedef struct InputState_t {
 
 typedef struct GameContext_t { 
     Entity_t *player_entity;
+    Entity_t *test_entity;
 } GameContext_t;
 
 typedef struct AppState_t {
