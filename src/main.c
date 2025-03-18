@@ -2,44 +2,14 @@
 #include <SDL3/SDL.h>
 
 #include "event_handler.h"
+#include "system.h"
+#include "app.h"
+#include "game.h"
+#include "entity.h"
+#include "input.h"
 
-#define APP_NAME "Akira"
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
 #define FPS 60
 #define MS_PER_FRAME (1000 / FPS)
-
-void init_entity(Entity_t *entity, int x, int y, int w, int h) {
-    entity->x_pos = x;
-    entity->y_pos = y;
-
-    entity->collision_box = (SDL_Rect){
-        .x = x,
-        .y = y,
-        .w = w,
-        .h = h
-    };
-}
-
-AppState_t *initialize_app_state() {
-    AppState_t *app_state = SDL_calloc(1, sizeof(AppState_t));
-
-    InputState_t *input_state = SDL_calloc(1, sizeof(InputState_t));
-    app_state->input_state = input_state;
-
-    GameContext_t *game_context = SDL_calloc(1, sizeof(GameContext_t));
-    app_state->game_context = game_context;
-
-    Entity_t *player_entity = SDL_calloc(1, sizeof(Entity_t));
-    init_entity(player_entity, 0, 0, 50, 50);
-    app_state->game_context->player_entity = player_entity;
-
-    Entity_t *test_entity = SDL_calloc(1, sizeof(Entity_t));
-    init_entity(test_entity, 100, 100, 50, 50);
-    app_state->game_context->test_entity = test_entity;
-
-    return app_state;
-}
 
 int main(int argc, char *argv[]) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -47,22 +17,19 @@ int main(int argc, char *argv[]) {
         SDL_Quit();
     }
 
-    if (!SDL_SetAppMetadata(APP_NAME, "1.0.0", NULL)) {
-        SDL_Log("main: could not set metadata: '%s'\n", SDL_GetError());
-    }
+    SystemManager manager;
+    init_manager(&manager);
+    
+    // register systems
+    register_system(&manager, init_app_state, destroy_app_state);
+    register_system(&manager, init_input_state, destroy_input_state);
+    register_system(&manager, init_game_context, destroy_game_context);
 
-    AppState_t *app_state = initialize_app_state();
+    init_all_systems(&manager);
 
-    if (!SDL_CreateWindowAndRenderer(APP_NAME, SCREEN_WIDTH, SCREEN_HEIGHT, 0, &app_state->window, &app_state->renderer)) {
-        SDL_Log("main: could not create window and renderer: '%s'\n", SDL_GetError());
-        cleanup(app_state);
-        SDL_Quit();
-    }
+    SDL_Renderer *renderer = ((AppState *)get_system(&manager, SYSTEM_APP))->renderer;
 
-    if (!SDL_SetWindowPosition(app_state->window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED)) {
-        SDL_Log("main: could not set window position: '%s'\n", SDL_GetError());
-    }
-
+    // game loop
     bool is_running = true;
     SDL_Event event;
     uint32_t previous = SDL_GetTicks();
@@ -79,23 +46,23 @@ int main(int argc, char *argv[]) {
                     is_running = false;
                     break;
                 case SDL_EVENT_KEY_DOWN:
-                    handle_input(event.key.scancode, true, app_state->input_state);
+                    handle_input(&manager, event.key.scancode, true);
                     break;
                 case SDL_EVENT_KEY_UP:
-                    handle_input(event.key.scancode, false, app_state->input_state);
+                    handle_input(&manager, event.key.scancode, false);
                 default:
                     break;
             }
         }
 
-        update(delta_time, app_state->input_state, app_state->game_context);
+        update(&manager, delta_time);
 
-        SDL_SetRenderDrawColor(app_state->renderer, 0, 0, 0, 255);
-        SDL_RenderClear(app_state->renderer);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
         
-        render(app_state->renderer, app_state->game_context);
+        render(&manager, renderer);
 
-        SDL_RenderPresent(app_state->renderer);
+        SDL_RenderPresent(renderer);
 
         frame_time = SDL_GetTicks() - current;
         if (frame_time < MS_PER_FRAME) {
@@ -103,5 +70,5 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    cleanup(app_state);
+    destroy_manager(&manager);
 }

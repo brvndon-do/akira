@@ -2,7 +2,6 @@
 
 #include "structs.h"
 
-void handle_input(SDL_Scancode key_code, bool is_pressed, InputState_t *input_state);
-void update(double delta_time, InputState_t *input_state, GameContext_t *game_context);
-void render(SDL_Renderer *renderer, GameContext_t *game_context);
-void cleanup(AppState_t *app_state);
+void handle_input(SystemManager *manager, SDL_Scancode key_code, bool is_pressed);
+void update(SystemManager *manager, double delta_time);
+void render(SystemManager *manager, SDL_Renderer *renderer);

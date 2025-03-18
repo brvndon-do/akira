@@ -3,7 +3,7 @@
 
 #include "event_handler.h"
 
-void update_collision_box(Entity_t *entity) {
+void update_collision_box(Entity *entity) {
     entity->collision_box.x = entity->x_pos;
     entity->collision_box.y = entity->y_pos;
 }
@@ -12,49 +12,50 @@ bool is_collided(SDL_Rect *source_rect, SDL_Rect *target_rect) {
     return SDL_HasRectIntersection(source_rect, target_rect);
 }
 
-void handle_input(SDL_Scancode key_code, bool is_pressed, InputState_t *input_state) {
-    switch (key_code) {
-        case SDL_SCANCODE_UP:
-            input_state->move_up = is_pressed;
-            break;
-        case SDL_SCANCODE_DOWN:
-            input_state->move_down = is_pressed;
-            break;
-        case SDL_SCANCODE_LEFT:
-            input_state->move_left = is_pressed;
-            break;
-        case SDL_SCANCODE_RIGHT:
-            input_state->move_right = is_pressed;
-            break;
-        default:
-            break;
+void handle_input(SystemManager *manager, SDL_Scancode key_code, bool is_pressed) {
+    InputState *input_state = get_system(manager, SYSTEM_INPUT);
+    
+    if (!input_state) {
+        return;
     }
+
+    input_state->keys[key_code] = is_pressed;
 }
 
-void update (double delta_time, InputState_t *input_state, GameContext_t *game_context) {
+void update(SystemManager *manager, double delta_time) {
     const float speed = 100.0f;
-    Entity_t *player = game_context->player_entity;
 
-    if (input_state->move_up) {
+    GameContext *game_context = get_system(manager, SYSTEM_GAME);
+    InputState *input_state = get_system(manager, SYSTEM_INPUT);
+
+    if (!game_context || !input_state) {
+        return;
+    }
+
+    Entity *player = game_context->player_entity;
+
+    if (input_state->keys[SDL_SCANCODE_UP]) {
         player->y_pos -= speed * delta_time;
     }
 
-    if (input_state->move_down) {
+    if (input_state->keys[SDL_SCANCODE_DOWN]) {
         player->y_pos += speed * delta_time;
     }
 
-    if (input_state->move_left) {
+    if (input_state->keys[SDL_SCANCODE_LEFT]) {
         player->x_pos -= speed * delta_time;
     }
 
-    if (input_state->move_right) {
+    if (input_state->keys[SDL_SCANCODE_RIGHT]) {
         player->x_pos += speed * delta_time;
     }
 }
 
-void render(SDL_Renderer *renderer, GameContext_t *game_context) {
-    Entity_t *player = game_context->player_entity;
-    Entity_t *test = game_context->test_entity;
+void render(SystemManager *manager, SDL_Renderer *renderer) {
+    GameContext *game_context = get_system(manager, SYSTEM_GAME);
+
+    Entity *player = game_context->player_entity;
+    Entity *test = game_context->test_entity;
 
     SDL_FRect player_rect = {
         .x = player->x_pos,
@@ -82,15 +83,4 @@ void render(SDL_Renderer *renderer, GameContext_t *game_context) {
     if (is_collided(&player->collision_box, &test->collision_box)) {
         printf("collided\n");
     }
-}
-
-void cleanup(AppState_t *app_state) {
-    SDL_DestroyWindow(app_state->window);
-    SDL_DestroyRenderer(app_state->renderer);
-
-    SDL_free(app_state->input_state);
-    SDL_free(app_state->game_context->player_entity);
-    SDL_free(app_state->game_context->test_entity);
-    SDL_free(app_state->game_context);
-    SDL_free(app_state);
 }
