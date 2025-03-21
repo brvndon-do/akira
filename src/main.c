@@ -21,9 +21,9 @@ int main(int argc, char *argv[]) {
     init_manager(&manager);
     
     // register systems
-    register_system(&manager, init_app_state, destroy_app_state);
-    register_system(&manager, init_input_state, destroy_input_state);
-    register_system(&manager, init_game_context, destroy_game_context);
+    register_system(&manager, (SystemInitFunction)init_app_state, (SystemDestroyFunction)destroy_app_state);
+    register_system(&manager, (SystemInitFunction)init_input_state, (SystemDestroyFunction)destroy_input_state);
+    register_system(&manager, (SystemInitFunction)init_game_context, (SystemDestroyFunction)destroy_game_context);
 
     init_all_systems(&manager);
 

@@ -27,7 +27,7 @@ AppState *init_app_state() {
 
 void destroy_app_state(AppState *app_state) {
     SDL_DestroyWindow(app_state->window);
-    SDL_DestroyRenderer(app_state->window);
+    SDL_DestroyRenderer(app_state->renderer);
 
     SDL_free(app_state);
 }
