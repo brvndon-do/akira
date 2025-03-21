@@ -24,7 +24,7 @@ typedef struct SystemManager_t {
 void init_manager(SystemManager *manager);
 void destroy_manager(SystemManager *manager);
 
-void register_system(SystemManager *manager, SystemInitFunction initFn, SystemDestroyFunction destroyFn);
+void register_system(SystemManager *manager, SystemType type, SystemInitFunction initFn, SystemDestroyFunction destroyFn);
 void *get_system(SystemManager *manager, SystemType type);
 
 void init_all_systems(SystemManager *manager);

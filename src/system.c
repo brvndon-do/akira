@@ -10,9 +10,10 @@ void destroy_manager(SystemManager *manager) {
     free(manager);
 }
 
-void register_system(SystemManager *manager, SystemInitFunction initFn, SystemDestroyFunction destroyFn) {
+void register_system(SystemManager *manager, SystemType type, SystemInitFunction initFn, SystemDestroyFunction destroyFn) {
     SystemNode *node = malloc(sizeof(SystemNode));
     node->system.instance = NULL;
+    node->system.type = type;
     node->system.initFn = initFn;
     node->system.destroyFn = destroyFn;
 
